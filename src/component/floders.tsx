@@ -1,11 +1,13 @@
 import { useState ,useEffect , useContext} from "react";
 import { File,Folder } from "lucide-react"
 import { AppContext } from "../App";
-
+import {buildPreviewHtml} from './tools/buildproviewhtml'
 
 function Floders() {
+  const { sethtmlfile} = useContext(AppContext);
   const { setgetFile} = useContext(AppContext);
-
+  
+  
   interface interFile {
     Name: string;
     Kind: string;
@@ -30,27 +32,40 @@ function Floders() {
   const [showfolederfiles,setshowfolderfiles]=useState(true)
   const [folder,setfolder]=useState<interFolder | null>(null)
   const [file,setfile]=useState<interFile []>([])
-  const [folderfiles,setfolderfiles]=useState<interFile [] >([])
+  const {folderfiles}=useContext(AppContext)
+  const {setfolderfiles}=useContext(AppContext)
 
-   const FolderhandleClick = async () => {
-    const diradd=await window.showDirectoryPicker();
-    const folder: interFolder = {
-      name: diradd.name,
-      files: []
-    };
+  
+
+  const FolderhandleClick = async () => {
+  const diradd = await window.showDirectoryPicker();
+  const folder: interFolder = { name: diradd.name, files: [] };
+  
+  const collectedFiles: interFile[] = [];
+  let htmlEntry: { name: string; handle: FileHandle } | null = null;
+
+  // مرحلة 1: اجمع كل الملفات بدون دمج
+  for await (const [name, handle] of diradd.entries()) {
+    const file: interFile = { Name: name, Kind: handle.kind, handle };
+    collectedFiles.push(file);
     
-    for await (const [name,handle] of diradd.entries()) {
-      
-      const file:interFile={
-      Name:name,
-      Kind:handle.kind,
-      handle,
-      }
-      setfolderfiles(f=>[...f,file])
+    if (name.endsWith(".html")) {
+      htmlEntry = { name, handle: handle as FileHandle };
     }
-    setfolder(folder) ;
-    
   }
+
+  setfolderfiles(collectedFiles);
+  setfolder(folder);
+
+  // مرحلة 2: بعد ما توصلت لكل الملفات، ادمج HTML مع CSS/JS
+  if (htmlEntry) {
+    const htmlFileObj = await htmlEntry.handle.getFile();
+    const htmlContents = await htmlFileObj.text();
+    
+    const finalHtml = await buildPreviewHtml(htmlContents, collectedFiles);
+    sethtmlfile({ Name: htmlEntry.name, contents: finalHtml, handle: htmlEntry.handle });
+  }
+};
 
   useEffect(()=>{
     if(folderfiles && folderfiles.length>0){
@@ -103,6 +118,7 @@ function Floders() {
   }
 };
 
+  
 
   const FilehandleClick = async() => {
     const [fileadd]=await window.showOpenFilePicker();
@@ -127,6 +143,9 @@ function Floders() {
                             const file = await fileHandle.getFile();
                             const contents = await file.text();
                             setgetFile({Name:item.Name, contents, handle: fileHandle });
+                            
+                            localStorage.setItem("folder",JSON.stringify({Name:item.Name, contents, handle: fileHandle }))
+                            
                           }}>
                           <File className="w-4 h-4 inline mr-2" />
                           {item.Name}

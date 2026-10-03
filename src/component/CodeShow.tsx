@@ -12,10 +12,20 @@ import { autocompletion } from '@codemirror/autocomplete';
 import { Compartment } from '@codemirror/state';
 
 import { AppContext } from '../App';
+import {buildPreviewHtml} from './tools/buildproviewhtml'
+import {findFile} from './tools/buildproviewhtml'
 
 
 function CodeShow() {
-  const { getfile }=useContext(AppContext);
+
+
+ 
+  const { getfile ,setgetFile}=useContext(AppContext);
+  const { update,setupdate} = useContext(AppContext);
+  const { sethtmlfile} =useContext(AppContext)
+  const {folderfiles}=useContext(AppContext)
+  const {htmlfile}=useContext(AppContext)
+  
   const [ Autocomlete, setAutocomlete ] = useState(true); 
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
@@ -23,8 +33,9 @@ function CodeShow() {
   const langcompartemet= new Compartment();
 
   function getlangExt(filename){
-    if (filename?.endsWith(".html"))return html();
-    if (filename?.endsWith(".css"))return css();
+    if (!filename )return javascript();
+    if (filename.endsWith(".html"))return html();
+    if (filename.endsWith(".css"))return css();
     return javascript();
   }
   
@@ -32,6 +43,7 @@ function CodeShow() {
   useEffect(() => {
     if (!editorRef.current) return;
     
+
     const extensions = [
       lineNumbers(),
       history(),
@@ -58,24 +70,49 @@ function CodeShow() {
 
     return () => view.destroy();
   }, [getfile]);
+
+
+
+
   const SaveFile = async () => {
-    const newContent =viewRef.current?.state.doc.toString();
-    
-    try {
-      const writeable = await getfile?.handle?.createWritable();
-      await writeable?.write(newContent);
-      await writeable?.close();
-      alert('File saved successfully!');
-    } 
-    
-    catch (error) {
-      console.error('Error saving file:', error);
-      alert('Failed to save the file.');
+  const newContent = viewRef.current?.state.doc.toString();
+  try {
+    const writeable = await getfile?.handle?.createWritable();
+    await writeable?.write(newContent);
+    await writeable?.close();
+    alert('File saved successfully!');
+
+    // إذا الملف المحفوظ يأثر على المعاينة (html أو css أو js)
+    const name = getfile?.Name || "";
+    if (name.endsWith(".html") || name.endsWith(".css") || name.endsWith(".js")) {
+      
+      // دور على ملف الـ HTML الأساسي جوا الشجرة (يفترض عندك دالة findFile أو htmlfile.Name محفوظ)
+      const htmlEntry = findFile(folderfiles,htmlfile?.Name);
+      
+      if (htmlEntry) {
+        const htmlHandle = htmlEntry.handle as FileHandle;
+        const htmlFileObj = await htmlHandle.getFile();
+        const rawHtml = await htmlFileObj.text();
+        
+        // ادمج مع أحدث نسخة من كل الملفات (بما فيها الملف يلي غير حفظناه توا)
+        const finalHtml = await buildPreviewHtml(rawHtml, folderfiles);
+        
+        sethtmlfile({ Name: htmlEntry.Name, contents: finalHtml, handle: htmlHandle });
+      }
+      if (getfile){
+        setgetFile({ getfile,contents:newContent})
+      }
     }
-  };
+    
+    setupdate(!update);
+  } catch (error) {
+    console.error('Error saving file:', error);
+    alert('Failed to save the file.');
+  }
+};
 
   return (
-    <div className="w-3/4 p-4">
+    <div className=" p-4">
       <div className="flex justify-between items-center mb-4">
         <h1>CodePlay</h1>
         <div className="flex gap-2">
