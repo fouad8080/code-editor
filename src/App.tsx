@@ -58,7 +58,7 @@ function App() {
 
 
   return (
-    <AppContext.Provider value={{getfile, setgetFile ,htmlfile ,sethtmlfile,setupdate,setfolderfiles,folderfiles}}>
+    <AppContext.Provider value={{getfile,update, setgetFile ,htmlfile ,sethtmlfile,setupdate,setfolderfiles,folderfiles}}>
         <Upbar />
         <div className="flex flex-row">
           <Floders value={{getfile, setgetFile ,htmlfile,sethtmlfile,update,folderfiles,setfolderfiles}} />
