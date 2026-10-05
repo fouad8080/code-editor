@@ -1,0 +1,10 @@
+<type>(<scope>): <short summary>
+
+Longer description (wrap at ~72 chars).
+
+BREAKING CHANGE: Describe the breaking change and migration steps.
+
+Closes: #<issue-number>
+
+---
+Guidance: Use Conventional Commits. Types: feat, fix, chore, docs, refactor, perf, test, build, ci.

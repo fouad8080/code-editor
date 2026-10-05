@@ -49,7 +49,6 @@ function App() {
   const [getfile, setgetFile] = useState<{Name:string, contents:string, handle: FileHandle}|null>(
     ()=>{
       const foldersaved=localStorage.getItem("folder");
-      console.log(foldersaved)
       return foldersaved ? JSON.parse(foldersaved) : null
     }
   )
