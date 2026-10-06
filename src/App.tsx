@@ -14,10 +14,7 @@ interface interFile {
     isOpen?: boolean;
   }
 
-  type FileHandle = {
-    name: string;
-    kind: string;
-  };
+  type FileHandle = FileSystemFileHandle;
 
 interface AppContextType {
   getfile: { Name: string; contents: string; handle: FileHandle } | null;
@@ -63,15 +60,15 @@ function App() {
     <AppContext.Provider value={{getfile,update, setgetFile ,htmlfile ,sethtmlfile,setupdate,setfolderfiles,folderfiles}}>
         <Upbar />
         <div className="flex flex-row">
-          <Floders value={{getfile, setgetFile ,htmlfile,sethtmlfile,update,folderfiles,setfolderfiles}} />
+          <Floders  />
             <div className="flex flex-col w-full  ">
                 <div className="flex gap-2 border-b border-gray-300 p-2 ">
                 <button onClick={() => setActiveTab("editor")} className={` text-white px-4 py-2 rounded ${activeTab ? "bg-blue-500 hover:bg-blue-600" :"bg-blue-600 hover:bg-blue-700"}` }>Editor</button>
                 <button onClick={() => setActiveTab("preview")} className={`  text-white px-4 py-2 rounded ${activeTab ? "bg-blue-500 hover:bg-blue-600" :"bg-blue-600 hover:bg-blue-700"} ` }>Preview</button>
               </div>
               
-              {activeTab === "editor" && <CodeShow value={{getfile, setgetFile,setupdate,update,htmlfile,sethtmlfile,folderfiles,setfolderfiles}} />}
-              {activeTab === "preview" && <Proview value={{htmlfile,update}}/>}
+              {activeTab === "editor" && <CodeShow  />}
+              {activeTab === "preview" && <Proview />}
               
             </div>
             

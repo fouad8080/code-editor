@@ -36,7 +36,6 @@ function Floders() {
   const collectedFiles: interFile[] = [];
   let htmlEntry: { name: string; handle: FileSystemFileHandle } | null = null;
 
-  // مرحلة 1: اجمع كل الملفات بدون دمج
   for await (const [name, handle] of diradd.entries()) {
     const file: interFile = { Name: name, Kind: handle.kind, handle };
     collectedFiles.push(file);
@@ -49,7 +48,6 @@ function Floders() {
   setfolderfiles(collectedFiles);
   setfolder(folder);
 
-  // مرحلة 2: بعد ما توصلت لكل الملفات، ادمج HTML مع CSS/JS
   if (htmlEntry) {
     const htmlFileObj = await htmlEntry.handle.getFile();
     const htmlContents = await htmlFileObj.text();

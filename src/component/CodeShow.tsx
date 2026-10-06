@@ -76,17 +76,23 @@ function CodeShow() {
 
   const SaveFile = async () => {
   const newContent = viewRef.current?.state.doc.toString();
+  if(newContent===undefined || !getfile) return;
   try {
+    
     const writeable = await getfile?.handle?.createWritable();
     await writeable?.write(newContent);
     await writeable?.close();
     alert('File saved successfully!');
 
-    // إذا الملف المحفوظ يأثر على المعاينة (html أو css أو js)
+    
     const name = getfile?.Name || "";
     if (name.endsWith(".html") || name.endsWith(".css") || name.endsWith(".js")) {
       
-      // دور على ملف الـ HTML الأساسي جوا الشجرة (يفترض عندك دالة findFile أو htmlfile.Name محفوظ)
+      
+      if (!htmlfile) {
+        alert("No HTML file found for preview.");
+        return;
+      }
       const htmlEntry = findFile(folderfiles,htmlfile?.Name);
       
       if (htmlEntry) {
@@ -94,7 +100,6 @@ function CodeShow() {
         const htmlFileObj = await htmlHandle.getFile();
         const rawHtml = await htmlFileObj.text();
         
-        // ادمج مع أحدث نسخة من كل الملفات (بما فيها الملف يلي غير حفظناه توا)
         const finalHtml = await buildPreviewHtml(rawHtml, folderfiles);
         
         sethtmlfile({ Name: htmlEntry.Name, contents: finalHtml, handle: htmlHandle });

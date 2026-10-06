@@ -1,19 +1,11 @@
 interface interFile {
     Name: string;
     Kind: string;
-    handle?: FileHandle | DirectoryHandle;
+    handle?: FileSystemFileHandle | FileSystemDirectoryHandle;
     children?: interFile[];
     isOpen?: boolean;
   }
-  type FileHandle = {
-    name: string;
-    kind: string;
-  };
-  type DirectoryHandle = {
-    name: string;
-    kind: string;
-    entries():   AsyncIterableIterator<[string, FileHandle | DirectoryHandle]>;
-  };
+  
 export const findFile = (files: interFile[], name: string): interFile | null => {
     for (const f of files) {
       if (f.Name === name) return f;
@@ -26,7 +18,6 @@ export const findFile = (files: interFile[], name: string): interFile | null => 
   };
 
 export async function buildPreviewHtml(htmlContent: string, allFiles: interFile[]): Promise<string> {
-  // دالة تدور على ملف بالاسم جوا الشجرة كاملة (حتى جوا المجلدات)
   const findFile = (files: interFile[], name: string): interFile | null => {
     for (const f of files) {
       if (f.Name === name) return f;
@@ -39,14 +30,13 @@ export async function buildPreviewHtml(htmlContent: string, allFiles: interFile[
   };
 
   const readFileContent = async (file: interFile): Promise<string> => {
-    const handle = file.handle as FileHandle;
+    const handle = file.handle as FileSystemFileHandle;
     const fileObj = await handle.getFile();
     return await fileObj.text();
   };
 
   let result = htmlContent;
 
-  // استبدال <link rel="stylesheet" href="..."> بمحتوى CSS
   const linkRegex = /<link[^>]+href=["']([^"']+)["'][^>]*>/g;
   let match;
   while ((match = linkRegex.exec(htmlContent)) !== null) {
@@ -57,7 +47,6 @@ export async function buildPreviewHtml(htmlContent: string, allFiles: interFile[
     }
   }
 
-  // استبدال <script src="..."></script> بمحتوى JS
   const scriptRegex = /<script[^>]+src=["']([^"']+)["'][^>]*><\/script>/g;
   while ((match = scriptRegex.exec(htmlContent)) !== null) {
     const jsFile = findFile(allFiles, match[1]);
