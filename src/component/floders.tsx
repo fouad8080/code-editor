@@ -1,17 +1,17 @@
-import { useState ,useEffect , useContext} from "react";
+import { useState ,useEffect , } from "react";
 import { File,Folder } from "lucide-react"
-import { AppContext } from "../App";
+import { useAppContext } from "../App";
 import {buildPreviewHtml} from './tools/buildproviewhtml'
 
 function Floders() {
-  const { sethtmlfile} = useContext(AppContext);
-  const { setgetFile} = useContext(AppContext);
+  const { sethtmlfile} = useAppContext();
+  const { setgetFile} = useAppContext();
   
   
   interface interFile {
     Name: string;
     Kind: string;
-    handle?: FileHandle | DirectoryHandle;
+    handle?: FileSystemFileHandle | FileSystemDirectoryHandle;
     children?: interFile[];
     isOpen?: boolean;
   }
@@ -32,8 +32,8 @@ function Floders() {
   const [showfolederfiles,setshowfolderfiles]=useState(true)
   const [folder,setfolder]=useState<interFolder | null>(null)
   const [file,setfile]=useState<interFile []>([])
-  const {folderfiles}=useContext(AppContext)
-  const {setfolderfiles}=useContext(AppContext)
+  const {folderfiles}=useAppContext()
+  const {setfolderfiles}=useAppContext()
 
   
 
@@ -109,7 +109,7 @@ function Floders() {
         Name: name,
         Kind: handle.kind,
         handle,
-        children: handle.kind === "directory" ? null : undefined
+        children: handle.kind === "directory" ? undefined : undefined
       });
     }
     updateFileInTree(targetFile.Name, { children: items, isOpen: true });
@@ -202,7 +202,7 @@ function Floders() {
                           const fileHandle = item.handle as FileHandle;
                           const file = await fileHandle.getFile();
                           const contents = await file.text();
-                          setgetFile({ contents, handle: fileHandle });
+                          setgetFile({Name:item.Name, contents, handle: fileHandle });
                         }}>
                   <File className="w-4 h-4 inline mr-2" />{item.Name}
                 </button>

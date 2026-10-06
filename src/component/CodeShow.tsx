@@ -11,7 +11,7 @@ import { css } from '@codemirror/lang-css';
 import { autocompletion } from '@codemirror/autocomplete';
 import { Compartment } from '@codemirror/state';
 
-import { AppContext } from '../App';
+import { useAppContext } from '../App';
 import {buildPreviewHtml} from './tools/buildproviewhtml'
 import {findFile} from './tools/buildproviewhtml'
 
@@ -20,11 +20,11 @@ function CodeShow() {
 
 
  
-  const { getfile ,setgetFile}=useContext(AppContext);
-  const { update,setupdate} = useContext(AppContext);
-  const { sethtmlfile} =useContext(AppContext)
-  const {folderfiles}=useContext(AppContext)
-  const {htmlfile}=useContext(AppContext)
+  const { getfile ,setgetFile}=useAppContext();
+  const { update,setupdate} = useAppContext();
+  const { sethtmlfile} =useAppContext()
+  const {folderfiles}=useAppContext()
+  const {htmlfile}=useAppContext()
   
   const [ Autocomlete, setAutocomlete ] = useState(true); 
   const editorRef = useRef<HTMLDivElement>(null);

@@ -3,17 +3,13 @@ import Floders from "./component/floders"
 import Upbar from "./component/Upbar"
 import Proview from "./component/proview"
 
-import {createContext, useState} from 'react'
+import {createContext, useContext, useState} from 'react'
 
-type DirectoryHandle = {
-    name: string;
-    kind: string;
-    entries():   AsyncIterableIterator<[string, FileHandle | DirectoryHandle]>;
-  };
+
 interface interFile {
     Name: string;
     Kind: string;
-    handle?: FileHandle | DirectoryHandle;
+    handle?: FileSystemFileHandle | FileSystemDirectoryHandle;
     children?: interFile[];
     isOpen?: boolean;
   }
@@ -35,7 +31,13 @@ interface AppContextType {
 }
 
 export const AppContext = createContext<AppContextType | null>(null)
-
+export function useAppContext() {
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error("useAppContext must be used within an AppContext.Provider");
+  }
+  return context;
+}
 
 function App() {
 
