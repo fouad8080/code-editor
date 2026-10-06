@@ -19,15 +19,7 @@ function Floders() {
     name: string;
     files: interFile[];
   }
-  type FileHandle = {
-    name: string;
-    kind: string;
-  };
-  type DirectoryHandle = {
-    name: string;
-    kind: string;
-    entries():   AsyncIterableIterator<[string, FileHandle | DirectoryHandle]>;
-  };
+  
 
   const [showfolederfiles,setshowfolderfiles]=useState(true)
   const [folder,setfolder]=useState<interFolder | null>(null)
@@ -42,7 +34,7 @@ function Floders() {
   const folder: interFolder = { name: diradd.name, files: [] };
   
   const collectedFiles: interFile[] = [];
-  let htmlEntry: { name: string; handle: FileHandle } | null = null;
+  let htmlEntry: { name: string; handle: FileSystemFileHandle } | null = null;
 
   // مرحلة 1: اجمع كل الملفات بدون دمج
   for await (const [name, handle] of diradd.entries()) {
@@ -50,7 +42,7 @@ function Floders() {
     collectedFiles.push(file);
     
     if (name.endsWith(".html")) {
-      htmlEntry = { name, handle: handle as FileHandle };
+      htmlEntry = { name, handle: handle as FileSystemFileHandle };
     }
   }
 
@@ -102,7 +94,7 @@ function Floders() {
   
   // لو أول مرة يفتح، اقرأ محتواه
   if (targetFile.children == null) {
-    const dirHandle = targetFile.handle as DirectoryHandle;
+    const dirHandle = targetFile.handle as FileSystemDirectoryHandle;
     const items: interFile[] = [];
     for await (const [name, handle] of dirHandle.entries()) {
       items.push({
@@ -139,7 +131,7 @@ function Floders() {
                       <div className="file flex items-center pl-4 hover:bg-gray-200 cursor-pointer px-2 w-fit">
                         <button className="flex items-center hover:bg-gray-200 cursor-pointer px-2 w-fit" onClick={async () => 
                           {
-                            const fileHandle = item.handle as FileHandle;
+                            const fileHandle = item.handle as FileSystemFileHandle;
                             const file = await fileHandle.getFile();
                             const contents = await file.text();
                             setgetFile({Name:item.Name, contents, handle: fileHandle });
@@ -199,7 +191,7 @@ function Floders() {
               <li className="flex items-center pl-4 py-2" key={index}>
                 <button className="flex items-center hover:bg-gray-200 cursor-pointer px-2 w-fit" onClick={async () => 
                   {console.log(item)
-                          const fileHandle = item.handle as FileHandle;
+                          const fileHandle = item.handle as FileSystemFileHandle;
                           const file = await fileHandle.getFile();
                           const contents = await file.text();
                           setgetFile({Name:item.Name, contents, handle: fileHandle });

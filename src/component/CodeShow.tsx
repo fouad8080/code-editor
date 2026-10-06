@@ -1,4 +1,4 @@
-import { useState,useEffect, useRef ,useContext} from 'react';
+import { useState,useEffect, useRef } from 'react';
 import { Save } from 'lucide-react';
 
 import { EditorView, keymap, lineNumbers } from '@codemirror/view';
@@ -32,7 +32,7 @@ function CodeShow() {
 
   const langcompartemet= new Compartment();
 
-  function getlangExt(filename){
+  function getlangExt(filename:string | undefined): any {
     if (!filename )return javascript();
     if (filename.endsWith(".html"))return html();
     if (filename.endsWith(".css"))return css();
@@ -90,7 +90,7 @@ function CodeShow() {
       const htmlEntry = findFile(folderfiles,htmlfile?.Name);
       
       if (htmlEntry) {
-        const htmlHandle = htmlEntry.handle as FileHandle;
+        const htmlHandle = htmlEntry.handle as FileSystemFileHandle;
         const htmlFileObj = await htmlHandle.getFile();
         const rawHtml = await htmlFileObj.text();
         
@@ -99,9 +99,7 @@ function CodeShow() {
         
         sethtmlfile({ Name: htmlEntry.Name, contents: finalHtml, handle: htmlHandle });
       }
-      if (getfile){
-        setgetFile({ getfile,contents:newContent})
-      }
+      if (getfile) setgetFile({ ...getfile, contents: newContent ?? getfile.contents });
     }
     
     setupdate(!update);
