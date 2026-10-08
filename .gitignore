@@ -37,3 +37,4 @@ pnpm-debug.log*
 
 # Local libs (if you're storing CDN/UMD builds locally for the 32-bit laptop workflow)
 # libs/
+node_modules
