@@ -4,8 +4,8 @@ import { useAppContext } from "../App";
 import {buildPreviewHtml} from './tools/buildproviewhtml'
 
 function Floders() {
-  const { sethtmlfile} = useAppContext();
-  const { setgetFile} = useAppContext();
+  const { sethtmlfile,setgetFile} = useAppContext();
+  const { setopensidebar } = useAppContext();
   
   
   interface interFile {
@@ -135,7 +135,7 @@ function Floders() {
                             setgetFile({Name:item.Name, contents, handle: fileHandle });
                             
                             localStorage.setItem("folder",JSON.stringify({Name:item.Name, contents, handle: fileHandle }))
-                            
+                            setopensidebar(false)
                           }}>
                           <File className="w-4 h-4 inline mr-2" />
                           {item.Name}
@@ -143,7 +143,7 @@ function Floders() {
                       </div>
                     ) : (
                     <div className="flder flex flex-col  pl-4  cursor-pointer px-2">
-                      <button  className="flex items-center hover:bg-gray-200 cursor-pointer px-2 w-fit" onClick={() => toggleFolder(item)}>
+                      <button  className="flex items-center hover:bg-gray-200 cursor-pointer px-2 w-fit" onClick={() =>toggleFolder(item)}>
                         <Folder className="w-4 h-4 inline mr-2" />
                         <div>{item.Name}</div>
                       </button>
@@ -159,15 +159,18 @@ function Floders() {
   }
 
   return (
-    <div className="floders w-1/4 border border-gray-300 p-4 h-screen overflow-y-auto">
+    <div className="floders ">
       <div className="flex items-center justify-between mb-4">
         <h1>Floders Component</h1>
-        <button onClick={FilehandleClick}>
-          <File className="w-6 h-6 text-gray-600 cursor-pointer" />
-        </button>
-        <button onClick={FolderhandleClick}>
-          <Folder className="w-6 h-6 text-gray-600 cursor-pointer" />
-        </button>
+        <div className="flex gap-2">
+          <button onClick={FilehandleClick}>
+            <File className="w-6 h-6 text-gray-600 cursor-pointer" />
+          </button>
+          <button onClick={FolderhandleClick}>
+            <Folder className="w-6 h-6 text-gray-600 cursor-pointer" />
+          </button>
+        </div>
+        
       </div>
       {folder && (
         <div className="folder-info mb-4">
